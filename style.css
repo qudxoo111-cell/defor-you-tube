@@ -1,0 +1,223 @@
+:root{--bg:#0e1117;--panel:#171b23;--panel2:#202632;--line:#303849;--text:#f4f6fb;--muted:#9aa4b2;--accent:#67e8a5;--danger:#ff6b6b;--yellow:#ffd166}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.topbar{height:86px;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px 22px;border-bottom:1px solid var(--line);background:#111620;position:sticky;top:0;z-index:50}.topbar h1{margin:0;font-size:24px}.topbar p{margin:4px 0 0;color:var(--muted)}.topActions{display:flex;gap:8px;align-items:center}.appGrid{display:grid;grid-template-columns:330px minmax(320px,430px) 1fr;gap:14px;padding:14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.22)}h2{font-size:17px;margin:8px 0 12px}label{display:block;margin-top:12px;margin-bottom:6px;font-weight:700;font-size:13px;color:#dbe3ef}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:#0d1118;color:var(--text);padding:10px;font-size:14px}textarea{min-height:70px;resize:vertical}button{border:0;border-radius:10px;background:#2b3445;color:#fff;padding:10px 12px;cursor:pointer;font-weight:800}button:hover{filter:brightness(1.13)}button.primary{background:linear-gradient(135deg,#22c55e,#16a34a)}button.secondary{background:#333b4c}button.danger{background:#6b2530}.big{font-size:16px;padding:12px 18px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.hint{color:var(--muted);font-size:12px;line-height:1.45}.speedRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rangeValue{font-size:12px;color:var(--accent);text-align:right}.centerPane{position:sticky;top:100px;height:calc(100vh - 114px);overflow:auto}.previewHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}.previewBtns{display:flex;gap:6px;flex-wrap:wrap}.previewWrap{width:100%;max-width:360px;margin:0 auto;background:#05070b;border-radius:18px;padding:8px;border:1px solid #313848}canvas{display:block;width:100%;height:auto;aspect-ratio:9/16;background:#000;border-radius:14px}audio{width:100%;margin-top:10px}.download{display:block;margin-top:10px;padding:12px;border-radius:10px;text-align:center;text-decoration:none;background:var(--accent);color:#07120b;font-weight:900}pre{white-space:pre-wrap;max-height:120px;overflow:auto;background:#0c1018;color:#a9f5c7;border-radius:10px;padding:10px;font-size:12px}.rightPane{min-width:0}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.stickyTools{position:sticky;top:100px;background:var(--panel);padding-bottom:10px;z-index:20}.sceneEditor{display:flex;flex-direction:column;gap:12px}.sceneCard{display:grid;grid-template-columns:120px 1fr;gap:12px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px}.sceneThumb{width:120px;height:170px;background:#0b0f16;border:1px solid #3a4354;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center}.sceneThumb img{width:100%;height:100%;object-fit:cover}.sceneInfo{min-width:0}.sceneTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.badge{background:#111827;border:1px solid var(--line);border-radius:999px;padding:5px 8px;color:var(--yellow);font-size:12px}.miniGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}.miniGrid button,.miniGrid select,.miniGrid input{font-size:12px;padding:8px}.captionRows{display:flex;flex-direction:column;gap:8px}.captionRow{display:grid;grid-template-columns:72px 72px 1fr 36px;gap:6px;align-items:start}.captionRow input{padding:8px;font-size:12px}.captionRow textarea{min-height:54px;padding:8px;font-size:13px;line-height:1.35}.capText{white-space:pre-wrap}.thumbPanel{margin:0 14px 14px}.thumbGrid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px}.smallNote{font-size:11px;color:var(--muted)}@media(max-width:1100px){.appGrid{grid-template-columns:1fr}.centerPane{position:static;height:auto}.thumbGrid{grid-template-columns:1fr}.topbar{height:auto;align-items:flex-start;flex-direction:column}.topActions{flex-wrap:wrap}.sceneCard{grid-template-columns:92px 1fr}.sceneThumb{width:92px;height:130px}.captionRow{grid-template-columns:60px 60px 1fr 32px}}
+
+.checkLine{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:800;color:#dbe3ef}.checkLine input{width:auto;accent-color:#67e8a5}.previewWrap{max-width:330px}
+
+
+/* 세니얼 v1.2: 미리보기 화면 작게 표시 + 멈춤 방지용 저사양 UI */
+.appGrid{grid-template-columns:330px minmax(260px,300px) 1fr !important;}
+.centerPane{max-width:320px !important;}
+.previewWrap{max-width:230px !important; padding:6px !important; border-radius:14px !important;}
+canvas{border-radius:10px !important; image-rendering:auto;}
+.previewHeader{gap:6px !important;}
+.previewHeader h2{font-size:15px !important;}
+.previewBtns button{padding:8px 9px !important; font-size:12px !important;}
+audio{height:34px !important;}
+pre{max-height:90px !important; font-size:11px !important;}
+@media(max-width:1100px){.centerPane{max-width:none !important}.previewWrap{max-width:240px !important}}
+
+
+/* v1.5 미리보기 싱크 컨트롤 */
+.seekPanel{margin-top:10px;background:#101722;border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+.seekPanel input[type="range"]{grid-column:1/4;padding:0;accent-color:var(--accent)}
+.timeBadge{text-align:center;color:var(--accent);font-weight:900;font-size:12px;white-space:nowrap}.syncPanel{display:grid;grid-template-columns:1fr 80px 1fr 1fr;gap:6px;margin-top:8px}.syncPanel button{font-size:11px;padding:8px}.syncPanel input{font-size:12px;padding:8px;text-align:center}.sceneLabel{font-size:12px;color:var(--accent);font-weight:900;margin:8px 0 5px}.sceneApply{margin:6px 0 8px;background:#334155;font-size:12px;padding:8px 10px}.sceneFullText{min-height:64px;border-color:#44536b;background:#0b1018}
+@media(max-width:1100px){.syncPanel{grid-template-columns:1fr 1fr}.seekPanel{grid-template-columns:1fr}.seekPanel input[type="range"]{grid-column:auto}}
+
+
+/* v1.6 장면 세분할 컨트롤 */
+.sceneSplitTools{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 8px}
+.sceneSplitTools button{font-size:12px;padding:8px 10px;background:#263244}
+#splitMaxSeconds{border-color:#42526b}
+
+/* v2.0 참고영상 대본 + 3가지 이미지 스타일 + 초저사양 미리보기 */
+.scriptBox{min-height:140px;margin-top:10px;border-color:#5b21b6;background:#0b1018;line-height:1.45}
+.previewWrap{max-width:180px !important;padding:5px !important}
+.centerPane{max-width:270px !important}
+.appGrid{grid-template-columns:360px minmax(240px,270px) 1fr !important}
+.thumbGrid{grid-template-columns:150px 1fr 1fr 1fr auto !important}
+#videoRatio,#scriptLength,#thumbStyle{border-color:#4c1d95}
+@media(max-width:1100px){.appGrid{grid-template-columns:1fr !important}.centerPane{max-width:none !important}.previewWrap{max-width:190px !important}.thumbGrid{grid-template-columns:1fr !important}}
+
+/* v2.2 빈 화면 안내 */
+.emptyState{
+  min-height:220px;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:var(--muted);
+  line-height:1.7;
+  background:#101722;
+}
+
+
+/* v2.3 API 키 도움말 + 무료 음성 샘플 */
+.apiLabelRow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+.apiLabelRow label{margin:0}
+.tinyMark{padding:5px 8px!important;font-size:11px!important;border-radius:999px!important;background:#4c1d95!important;color:#fff!important;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
+.miniHelp{margin-top:8px;background:#0b1018;border:1px solid #5b21b6;border-radius:12px;padding:10px;font-size:12px;color:#dbeafe}
+.miniHelp p{margin:6px 0 10px;color:#9aa4b2;line-height:1.45}
+.miniHelpBtns{display:grid;grid-template-columns:1fr auto;gap:8px}
+#freeVoicePreset{border-color:#365314}
+
+
+/* v2.4 동영상 첨부 표시 + 음성 적용 표시 */
+.attachBox{margin-top:8px;border:1px solid var(--line);border-radius:12px;background:#101722;padding:10px}
+.attachTitle{font-weight:900;color:var(--accent);font-size:13px;margin-bottom:8px}
+#referenceVideoPreview{width:100%;max-height:170px;background:#000;border-radius:10px;border:1px solid #283244;display:block;margin-bottom:8px}
+.attachInfo{font-size:12px;color:#b7c4d7;line-height:1.5;margin-top:6px}
+.smallAttach{border:1px solid #273244;background:#101722;border-radius:10px;padding:8px;margin-top:8px}
+#btnUseVideoLength{width:100%;margin-top:8px}
+
+
+/* v2.5 영상 생성 쪽 파일 첨부 고정 표시 */
+.renderAttachPanel{margin:8px 0 10px;background:#101722;border:1px solid var(--line);border-radius:12px;padding:9px}
+.renderAttachPanel label{margin:0 0 6px;font-size:12px;color:#dbeafe}
+.renderAttachPanel input{font-size:12px;padding:8px}
+.okAttach{border-color:#16a34a!important;color:#a7f3d0!important;background:#0b1d14!important}
+
+
+/* v2.6 썸네일 전용 고정 영역 */
+.thumbPanel h2{margin-bottom:10px}
+.thumbGrid{grid-template-columns:140px 1fr 1fr 150px auto !important;align-items:center}
+.thumbPreviewBox{margin-top:12px;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+#thumbPreview{width:120px;max-width:100%;border-radius:12px;border:1px solid var(--line);background:#05070b}
+#thumbDownload{width:auto;margin-top:0;display:inline-block}
+#thumbFont,#thumbStyle{border-color:#4c1d95}
+@media(max-width:1100px){.thumbGrid{grid-template-columns:1fr !important}#thumbPreview{width:150px}}
+
+
+/* v2.8 왼쪽 영상 미리보기 제거: 첨부 상태만 표시하고 실제 재생은 가운데 캔버스 1개만 사용 */
+.hiddenVideoSource,
+#referenceVideoPreview{
+  display:none!important;
+  width:0!important;
+  height:0!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.attachOnlyNote{
+  margin:6px 0 8px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#0b1018;
+  border:1px dashed var(--line);
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4;
+}
+
+
+/* v2.9 썸네일 설정 상단 이동 + 글자 자동맞춤 */
+.leftPane .thumbTopPanel{
+  margin:14px 0 18px;
+  padding:14px;
+  border:1px solid #5b21b6;
+  border-radius:16px;
+  background:linear-gradient(180deg,#151b28,#101722);
+}
+.leftPane .thumbTopPanel h2{margin-top:0;color:#fff}
+.leftPane .thumbTopPanel .grid2{align-items:end}
+.compactThumbPreview{margin-top:10px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.compactThumbPreview img{width:100%;max-width:190px;border-radius:14px;border:1px solid var(--line);background:#05070b}
+#thumbMainTitle,#thumbSubTitle,#thumbFont,#thumbStyle,#thumbMainSize,#thumbSubSize,#thumbTextTop{border-color:#5b21b6}
+@media(max-width:1100px){.compactThumbPreview img{max-width:180px}}
+
+/* v3.0 상단 고정 썸네일 글자 */
+.leftPane .thumbTopPanel .hint{margin-top:0}
+.smallCheck{font-size:12px!important;margin:0!important;padding:6px 8px;border:1px solid var(--line);border-radius:10px;background:#111827}
+.sceneSplitTools .smallCheck input{width:auto}
+#thumbOverlayEnable{width:auto;accent-color:var(--accent)}
+.leftPane .thumbTopPanel .smallNote{margin-top:10px;line-height:1.45;color:#ffd166}
+
+
+/* v3.1 상단 고정 글자 위치/색상 조절 */
+.colorGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+.colorGrid input[type="color"]{height:42px;padding:4px;cursor:pointer}
+.thumbTopPanel input[type="range"]{accent-color:var(--accent)}
+.thumbTopPanel{border-color:#5b21b6;background:linear-gradient(180deg,#171b23,#121722)}
+@media(max-width:1100px){.colorGrid{grid-template-columns:1fr}}
+
+
+/* v3.5 소비자용 다운로드 버튼 + Ondoku 연동 */
+.bigAction{min-width:110px}
+button.renderingNow{background:#475569!important;cursor:wait!important;opacity:.9}
+button.downloadReady{background:linear-gradient(135deg,#facc15,#f97316)!important;color:#111827!important}
+.renderStatus{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;font-size:12px;font-weight:900;color:#cbd5e1;background:#0b1018}
+.renderStatus.working{color:#ffd166;border-color:#7c5f1d;background:#1b160a}
+.renderStatus.done{color:#67e8a5;border-color:#166534;background:#07130c}
+.renderStatus.error{color:#ff9b9b;border-color:#7f1d1d;background:#1f0b0b}
+.download.disabledDownload{background:#334155!important;color:#94a3b8!important;pointer-events:none;opacity:.75}
+.ttsPanel{margin-top:12px;border:1px solid #365314;border-radius:14px;padding:12px;background:#101722}
+.ttsPanel h2{margin-top:0}
+.smallScriptBox{min-height:110px}
+#btnCopyOpenOndoku{width:100%;margin-top:8px}
+
+
+/* v3.1 상단 순번 바로가기 메뉴 */
+.quickNav{
+  position:sticky;
+  top:86px;
+  z-index:45;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  overflow-x:auto;
+  padding:10px 14px;
+  background:rgba(14,17,23,.96);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(10px);
+  scrollbar-width:thin;
+}
+.quickNav button{
+  flex:0 0 auto;
+  padding:9px 12px;
+  border-radius:999px;
+  background:#202938;
+  border:1px solid #354154;
+  color:#dbe3ef;
+  font-size:13px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.quickNav button:hover,
+.quickNav button.active{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:#07120b;
+  border-color:#67e8a5;
+}
+.jumpTarget{scroll-margin-top:150px;}
+@media(max-width:1100px){
+  .quickNav{top:126px;padding:9px 10px;}
+  .jumpTarget{scroll-margin-top:185px;}
+}
+
+/* v3.2 음성파일 전용 작업칸 */
+.audioWorkBox{
+  margin:14px 0 18px;
+  padding:14px;
+  border:1px solid rgba(103,232,165,.42);
+  border-radius:16px;
+  background:linear-gradient(180deg,rgba(34,197,94,.12),rgba(16,23,34,.96));
+  box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 12px 26px rgba(0,0,0,.20);
+}
+.audioWorkHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.audioWorkHead h2{margin:0 0 4px;font-size:18px;color:#ffffff}
+.audioWorkHead p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.audioBadge{display:inline-flex;align-items:center;justify-content:center;min-width:64px;border-radius:999px;padding:6px 10px;background:#334155;color:#dbeafe;font-size:12px;font-weight:900;white-space:nowrap}
+.audioBadge.ready{background:#16a34a;color:white}
+.audioStatusBox{border-color:rgba(103,232,165,.45)!important;background:#07130d!important;color:#d9fbe8!important;line-height:1.65!important}
+.audioStatusBox b{color:#67e8a5}
+.audioActionGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.audioActionGrid button{font-size:13px;padding:11px 9px}
+.quickNav button[data-jump="secAudio"]{background:#14532d;color:#dcfce7;border-color:#22c55e}
+@media(max-width:1100px){.audioActionGrid{grid-template-columns:1fr}.audioWorkHead{flex-direction:column}.audioBadge{align-self:flex-start}}
+
+/* v3.4 쇼츠 생성 로딩/다운로드 버튼 보강 */
+.renderStatus.working{border-color:#f59e0b!important;color:#fde68a!important;background:#201807!important}
+.renderStatus.done{border-color:#22c55e!important;color:#a7f3d0!important;background:#082016!important}
+.renderStatus.error{border-color:#ef4444!important;color:#fecaca!important;background:#220b0b!important}
+button.renderingNow{background:#854d0e!important;cursor:wait!important}
+button.downloadReady{background:linear-gradient(135deg,#38bdf8,#2563eb)!important}
+.download.disabledDownload{opacity:.55;pointer-events:none;background:#334155!important;color:#cbd5e1!important}
