@@ -1,0 +1,13 @@
+깃허브 업로드 전 확인
+
+1. API 키 기본값 없음
+2. 센텀하이 카페 버튼 있음
+3. README.md 있음
+4. LICENSE 있음
+5. .gitignore 있음
+6. index.html 더블클릭 실행 확인
+7. 음성 넣고 자막 싱크 확인
+8. WEBM 다운로드 확인
+
+카페 주소
+https://cafe.naver.com/btbt7
