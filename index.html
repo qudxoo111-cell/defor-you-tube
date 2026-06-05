@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>세니얼 Senial - 이미지 프롬프트 쇼츠 생성기</title>
+<link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+<header class="topbar">
+<div>
+<h1>세니얼 Senial</h1>
+<p>음성 → 자막 싱크 → 장면 이미지 → 썸네일 → 쇼츠 영상</p>
+</div>
+<div class="topActions">
+<button class="primary big" id="btnAutoMode" type="button">올자동모드</button>
+<button class="danger" id="btnFullReset" type="button">전체 초기화</button>
+<button class="secondary" id="btnSaveProject">작업 저장(JSON)</button>
+<button class="secondary" id="btnLoadProject">작업 불러오기(JSON)</button>
+<input accept="application/json" hidden="" id="projectFile" type="file"/>
+</div>
+<div class="autoModePanel" id="autoModePanel" style="display:none">
+<div class="autoModeHead">
+<strong>올자동모드</strong>
+<span>API 키 입력 후 주제만 넣으세요.</span>
+</div>
+<div class="autoTopicBox">
+<label>주제 / 카테고리</label>
+<div class="autoTopicInputRow">
+<input id="autoSeedTopic" placeholder="예) 부업, AI, 명언, 오늘 이슈"/>
+<button class="primary" id="btnAutoTopicGenerate" type="button">주제 생성</button>
+</div>
+<p class="hint">오늘 날짜, SEO 키워드, 요즘 트렌드 기준으로 주제를 먼저 뽑습니다.</p>
+<div class="autoTopicResultBox" id="autoTopicResultBox"></div>
+</div>
+<div class="autoStyleBox" id="autoStyleBox" style="display:none">
+<div class="autoModeHead small">
+<strong>스타일 선택</strong>
+<span>선택하면 대본 복사 후 오토쿠가 열립니다.</span>
+</div>
+<div class="autoModeVersionGrid">
+<button class="autoVersionBtn photo" id="btnAutoPhoto" type="button">실사버전</button>
+<button class="autoVersionBtn comic" id="btnAutoComic" type="button">만화버전</button>
+</div>
+<div class="autoSubMenu" id="autoPhotoMenu" style="display:none">
+<button data-auto-kind="personBackground" data-auto-version="photo" type="button">실사 인물배경 실행</button>
+<button data-auto-kind="person" data-auto-version="photo" type="button">실사 인물 실행</button>
+<button data-auto-kind="background" data-auto-version="photo" type="button">실사 배경 실행</button>
+</div>
+<div class="autoSubMenu" id="autoComicMenu" style="display:none">
+<button data-auto-kind="personBackground" data-auto-version="comic" type="button">만화 지브리 인물배경 실행</button>
+<button data-auto-kind="person" data-auto-version="comic" type="button">만화 지브리 인물 실행</button>
+<button data-auto-kind="background" data-auto-version="comic" type="button">만화 지브리 배경 실행</button>
+</div>
+</div>
+</div>
+</header>
+<nav aria-label="작업 바로가기" class="quickNav">
+<button data-jump="secScript" type="button">1 주제/대본</button>
+<button data-jump="secAudio" type="button">2 음성넣기</button>
+<button data-jump="secThumb" type="button">3 자막스타일</button>
+<button data-jump="secSceneAuto" type="button">4 장면</button>
+<button data-jump="secImage" type="button">5 이미지</button>
+<button data-jump="secPreview" type="button">6 미리보기</button>
+<button data-jump="secOutput" type="button">7 WEBM 다운로드</button>
+<button data-jump="secEdit" type="button">8 장면 편집</button>
+</nav>
+<div class="workflowBar">
+<button id="btnStepPrev" type="button">◀ 이전단계</button>
+<span id="workflowStepLabel">1 대본</span>
+<button id="btnStepNext" type="button">다음단계 ▶</button>
+<button class="secondary" id="btnAutoSaveNow" type="button">💾 임시저장</button>
+</div>
+<main class="appGrid">
+<aside class="leftPane panel">
+
+<div class="monthlyModeBox apiOnlyBox jumpTarget" id="secInput">
+  <h2>대본 API 설정</h2>
+  <label>대본 API 종류</label>
+  <select id="scriptApiProvider">
+    <option selected value="openai">GPT</option>
+    <option value="gemini">Gemini</option>
+    <option value="claude">Claude</option>
+  </select>
+  <label>대본 API Key</label>
+  <div class="apiKeyWrap">
+    <input id="openaiApiKey" type="password" autocomplete="off" placeholder="API 키를 붙여넣으세요"/>
+    <button class="secondary apiEyeBtn" id="btnToggleApiKey" type="button" aria-label="API 키 표시 전환">👁</button>
+  </div>
+  <div class="apiCheckRow">
+    <button class="secondary" id="btnOpenScriptApiSite" type="button">API키 바로가기</button>
+    <button class="primary" id="btnCheckScriptApi" type="button">확인</button>
+    <span class="apiStatus fail" id="apiCheckStatus">확인안됨</span>
+  </div>
+</div>
+
+<section class="scriptDirectBox jumpTarget cleanBlock" id="secScript">
+<h2>1. 주제 고르기</h2>
+<p class="hint">키워드를 누르면 주제 10개가 나옵니다. 고르기 후 오른쪽 대본 편집에서 대본을 확인하고, 음성파일을 넣은 뒤 장면 자동나누기를 합니다.</p>
+<textarea class="scriptBox hiddenScriptSource" id="generatedScript" aria-hidden="true"></textarea>
+<div class="optionalScriptTools topicFlowBox">
+<label>주제 고르기</label>
+<div class="topicChipGrid" id="scriptTopicChips" aria-label="주제 빠른 선택"></div>
+<select id="scriptCategory" class="compactSelect">
+<option selected value="상식">상식</option>
+<option value="명언">명언</option>
+<option value="뉴스">뉴스</option>
+<option value="감성">감성</option>
+<option value="부업">부업</option>
+<option value="돈관리">돈관리</option>
+<option value="사업">사업</option>
+<option value="맛집">맛집</option>
+<option value="여행">여행</option>
+<option value="인테리어">인테리어</option>
+<option value="방수공사">방수공사</option>
+<option value="자동화">자동화</option>
+<option value="AI도구">AI도구</option>
+<option value="자기계발">자기계발</option>
+<option value="연애">연애</option>
+<option value="가족">가족</option>
+<option value="건강일상">건강일상</option>
+<option value="유머">유머</option>
+<option value="역사">역사</option>
+<option value="직접입력">직접입력</option>
+</select>
+<input id="scriptTopic" type="hidden" value=""/>
+<div class="keywordRow">
+  <input id="seoKeywordBox" placeholder="카테고리 선택 후 키워드를 누르세요" readonly/>
+  <button class="secondary" id="btnMakeKeywords" type="button">키워드</button>
+</div>
+<div class="topicSuggestionBox" id="topicSuggestionBox" aria-label="주제 10개 선택"></div>
+<label>추가 방향</label>
+<input id="scriptRequest" placeholder="예) 감성적으로, 정보형으로, 30대 공감"/>
+<label>대본 길이</label>
+<select id="scriptLength">
+<option selected="" value="30">30초 내외</option>
+<option value="45">45초 내외</option>
+<option value="60">60초 내외</option>
+</select>
+<div class="grid2">
+<button class="secondary" id="btnAnalyzeStyle" type="button">프롬프트 복사</button>
+<button class="primary" id="btnFocusScriptEditor" type="button">대본편집 생성</button>
+</div>
+</div>
+</section>
+
+
+<div class="topShortcutBar voiceLinkBlock" aria-label="음성 제작 바로가기">
+  <strong>음성 만들기 바로가기</strong>
+  <a href="https://ondoku3.com/" target="_blank" rel="noopener">오토쿠</a>
+  <a href="https://clovadubbing.naver.com" target="_blank" rel="noopener">네이버 클로바더빙</a>
+  <a href="https://elevenlabs.io" target="_blank" rel="noopener">일레븐랩스</a>
+  <a href="https://ttsmaker.com" target="_blank" rel="noopener">TTSMaker</a>
+  <a href="https://cafe.naver.com/mp3downs1/91262" target="_blank" rel="noopener">mp3downs 바로가기</a>
+</div>
+<section class="audioWorkBox jumpTarget cleanBlock" id="secAudio">
+<div class="audioWorkHead">
+<div>
+<h2>2. 음성넣기</h2>
+<p>위 바로가기에서 음성을 만든 뒤 여기서 파일을 넣습니다.</p>
+</div>
+<span class="audioBadge" id="audioQuickBadge">대기중</span>
+</div>
+<label>음성 파일 첨부</label>
+<input accept="audio/*" id="audioFile" type="file"/>
+<div class="audioDropZone" id="audioDropZone" role="button" tabindex="0">
+  <b>음성파일 넣기</b>
+  <span>클릭해서 파일 열기 또는 mp3/wav/m4a 파일을 여기로 끌어다 놓으세요.</span>
+</div>
+<div class="attachInfo audioStatusBox" id="audioAttachInfo">음성 파일을 선택하면 길이와 예상 자막 수가 표시됩니다.</div>
+<div class="audioActionGrid">
+<button class="primary" id="btnTranscribe" type="button">음성 길이 적용</button>
+<button class="secondary v5Hide" id="btnSyncFix" type="button">자막 싱크 보정</button>
+<button class="secondary v5Hide" id="btnSplitShort" type="button">자막/장면 촘촘히</button>
+<button class="secondary v5Hide" id="btnBuildScenes" type="button">장면 다시 만들기</button>
+</div>
+</section>
+<section class="captionSettingBox jumpTarget cleanBlock" id="secThumb">
+<h2>3. 자막 글자 설정</h2>
+<p class="hint">글자크기, 종류, 색깔, 바탕색을 여기서 바로 수정합니다. 전체컷/현재컷/개별컷 적용 가능.</p>
+<div class="grid2">
+<div>
+<label>한 줄 최대 글자 수</label>
+<input id="captionMaxChars" max="24" min="8" type="number" value="14"/>
+</div>
+<div>
+<label>최대 줄 수</label>
+<select id="captionMaxLines">
+<option value="1">1줄</option>
+<option value="2">2줄</option>
+<option selected="" value="3">3줄</option>
+</select>
+</div>
+</div>
+<label class="checkLine"><input checked="" id="captionTrimSentence" type="checkbox"/> 문장 기준으로 자연스럽게 자르기</label>
+<div class="grid2">
+<div>
+<label>짧은 자막 최소 표시 시간</label>
+<input id="captionMinSeconds" max="4" min="1.0" step="0.1" type="number" value="1.5"/>
+</div>
+<div>
+<label>자막 위치</label>
+<select id="captionPos">
+<option value="top">상단</option>
+<option value="upper">중상단</option>
+<option value="center">중앙</option>
+<option selected="" value="lower">중하단</option>
+<option value="bottom">하단</option>
+<option value="custom">사용자 지정</option>
+</select>
+</div>
+</div>
+<label>자막 크기</label>
+<input id="fontSize" max="120" min="22" type="range" value="58"/>
+<div class="rangeValue"><span id="fontSizeValue">58</span>px</div>
+<label>자막 Y 위치</label>
+<input id="captionY" max="92" min="8" type="range" value="62"/>
+<div class="rangeValue"><span id="captionYValue">62</span>%</div>
+<label>자막 X 위치</label>
+<input id="captionX" max="35" min="-35" type="range" value="0"/>
+<div class="rangeValue"><span id="captionXValue">0</span>%</div>
+<label>바탕 투명도</label>
+<input id="captionBoxOpacity" max="90" min="0" type="range" value="0"/>
+<div class="rangeValue"><span id="captionBoxOpacityValue">0</span>%</div>
+<div class="grid2">
+<div>
+<label>글씨 종류</label>
+<select id="captionFont">
+<option selected="" value="gothic">고딕</option>
+<option value="bold">굵은고딕</option>
+<option value="myeongjo">명조</option>
+<option value="hand">손글씨</option>
+<option value="youtube">유튜브형</option>
+</select>
+</div>
+<div>
+<label>굵기</label>
+<select id="captionFontWeight">
+<option value="700">보통</option>
+<option value="800">두껍게</option>
+<option selected="" value="900">아주 두껍게</option>
+</select>
+</div>
+</div>
+<div class="colorGrid captionColorGrid">
+<div><label>글자색</label><input id="captionTextColor" type="color" value="#ffffff"/></div>
+<div><label>테두리색</label><input id="captionStrokeColor" type="color" value="#b33636"/></div>
+<div><label>바탕색</label><input id="captionBgColor" type="color" value="#000000"/></div>
+</div>
+<div class="captionApplyBar stickyApplyBar">
+<button class="primary" id="btnApplyCaptionStyleAll" type="button">전체컷 적용</button>
+<button class="secondary" id="btnApplyCaptionStyleCurrent" type="button">현재컷 적용</button>
+</div>
+</section>
+<section class="cleanBlock jumpTarget" id="secSceneAuto">
+<h2>4. 장면/이미지</h2>
+<label>이미지 배치 기준</label>
+<select id="imagePerCaptions">
+<option selected="" value="1">자막 1칸당 이미지 1장</option>
+<option value="2">자막 2칸당 이미지 1장</option>
+<option value="3">자막 3칸당 이미지 1장</option>
+<option value="custom">직접 설정</option>
+</select>
+<input class="smallHiddenGap" id="customPerCaptions" max="10" min="1" type="number" value="1"/>
+<label>장면/자막 분할 기준 초</label>
+<input id="splitMaxSeconds" max="8" min="1.2" step="0.1" type="number" value="2.0"/>
+<label class="checkLine"><input checked="" id="autoSceneOnePerCaption" type="checkbox"/> 촘촘히 나눌 때 자막 1칸당 이미지 1장</label>
+<h2 class="jumpTarget" id="secImage">5. 이미지 생성</h2>
+<label>이미지 스타일</label>
+<select id="imageStyle">
+<option selected="" value="photo-person-bg">실사 인물배경</option>
+<option value="photo-person">실사 인물</option>
+<option value="photo-bg">실사 배경</option>
+<option value="comic-person-bg">만화 지브리 인물배경</option>
+<option value="comic-person">만화 지브리 인물</option>
+<option value="comic-bg">만화 지브리 배경</option>
+</select>
+<label class="checkLine"><input checked id="useCaptionForImage" type="checkbox"/> 이미지 프롬프트에 자막 내용 포함</label>
+<div class="imageAutoBox">
+  <button class="primary" id="btnAiAll" type="button">장면별 프롬프트 만들기</button>
+  <button class="secondary" id="btnGoThumbnail" type="button">썸네일 자동 만들기로 이동</button>
+  <button class="secondary" id="btnOpenImageProvider2" type="button">생성 사이트 열기</button>
+  <textarea id="imagePromptList" placeholder="전체 이미지 프롬프트가 여기에 생성됩니다."></textarea>
+</div>
+<label>전체 이미지 한 번에 넣기</label>
+<input accept="image/*" id="bulkImageFiles" multiple="" type="file"/>
+<p class="hint">완성 이미지를 장면별 카드에 끌어넣거나, 여러 이미지를 한 번에 선택하면 파일명 순서대로 장면에 들어갑니다.</p>
+</section>
+<section class="cleanBlock jumpTarget" id="secOutput">
+<h2>8. 출력 설정</h2>
+<label>영상 비율</label>
+<select id="videoRatio">
+<option selected="" value="vertical">세로 9:16</option>
+<option value="horizontal">가로 16:9</option>
+</select>
+<label>영상 빠르기</label>
+<div class="speedRow">
+<select id="speedPreset">
+<option value="0.8">0.8</option>
+<option value="0.9">0.9</option>
+<option selected="" value="1">1.0</option>
+<option value="1.1">1.1</option>
+<option value="1.2">1.2</option>
+<option value="1.5">1.5</option>
+</select>
+<input id="speedInput" max="3" min="0.5" step="0.01" type="number" value="1.00"/>
+</div>
+</section>
+
+<div aria-hidden="true" class="legacyHidden">
+<input id="youtubeUrl" type="hidden"/>
+<input accept="video/*" id="referenceVideoFile" type="file"/>
+<div id="videoAttachBox" style="display:none"><video id="referenceVideoPreview"></video><div id="referenceVideoInfo"></div><button id="btnUseVideoLength" type="button"></button></div>
+<textarea id="ttsText"></textarea>
+<button id="btnCopyTts" type="button"></button><button id="btnOpenOndoku" type="button"></button><button id="btnCopyOpenOndoku" type="button"></button>
+<select id="freeVoicePreset"><option value="female-soft">여성 부드러운 음성</option></select><div id="voiceStatus"></div><button id="btnVoicePreview" type="button"></button><button id="btnReadScript" type="button"></button>
+<input accept="audio/*" id="bgmFile" type="file"/>
+<input accept="image/*" id="logoFile" type="file"/>
+<button id="btnSample" type="button"></button>
+<input id="thumbOverlayEnable" type="checkbox"/>
+<select id="thumbStyle"><option value="comic">요즘 쇼츠형</option><option value="photo">깔끔 실사형</option></select>
+<input id="thumbMainTitle"/><input id="thumbSubTitle"/><select id="thumbFont"><option value="bold">굵은고딕</option></select>
+<input id="thumbMainSize" type="range" value="92"/><input id="thumbSubSize" type="range" value="56"/>
+<input id="thumbMainY" type="range" value="85"/><input id="thumbSubY" type="range" value="180"/>
+<input id="thumbTextX" type="range" value="0"/><input id="thumbSubGap" type="range" value="0"/>
+<input id="thumbMainColor" type="color" value="#ffffff"/><input id="thumbSubColor" type="color" value="#ffd166"/><input id="thumbStrokeColor" type="color" value="#000000"/>
+</div>
+</aside>
+<section class="centerPane panel jumpTarget" id="secPreview">
+<div class="previewHeader">
+<h2>미리보기</h2>
+<div class="previewBtns">
+<button id="btnPreview">▶ 재생</button>
+<button class="secondary" id="btnStopPreview">■ 정지</button>
+<button class="primary bigAction" id="btnRender">WEBM 생성 및 다운로드</button>
+<div class="renderProgressMini" id="renderProgressMini" aria-live="polite">
+  <div class="renderPercent" id="renderPercent">0%</div>
+  <div class="renderProgressTrack"><div class="renderProgressFill" id="renderProgressFill" style="width:0%"></div></div>
+</div>
+</div>
+</div>
+<div class="renderAttachPanel">
+<label>영상 생성용 파일 첨부</label>
+<input accept="video/*" id="renderVideoFile" type="file"/>
+<div class="attachInfo smallAttach" id="renderVideoAttachInfo">영상 생성용 첨부 영상 없음</div>
+</div>
+<div class="previewWrap">
+<canvas height="960" id="canvas" width="540"></canvas>
+</div>
+<div class="seekPanel">
+<button class="secondary" id="btnBack5">◀ 5초</button>
+<span class="timeBadge" id="previewTime">0:00.0 / 0:00.0</span>
+<button class="secondary" id="btnForward5">5초 ▶</button>
+<input id="previewSeek" max="0" min="0" step="0.01" type="range" value="0"/>
+</div>
+<div class="liveCaptionPanel">
+<div class="liveCaptionHead"><strong>현재 자막 바로 수정</strong><span id="liveCaptionInfo">자막 없음</span></div>
+<textarea id="liveCaptionText" placeholder="미리보기 시간 또는 오른쪽 자막칸을 선택하면 여기서 바로 수정됩니다."></textarea>
+<p class="hint">입력하면 미리보기와 오른쪽 자막칸에 바로 적용됩니다. 글자크기/색/위치도 즉시 반영됩니다.</p>
+</div>
+<div class="syncPanel v5VoiceOnly">
+<button class="secondary" id="btnSyncMinus">자막 -0.3초</button>
+<input id="syncOffset" step="0.1" type="number" value="0.0"/>
+<button class="secondary" id="btnSyncPlus">자막 +0.3초</button>
+<button class="secondary" id="btnSyncReset">싱크 0</button>
+</div>
+<audio controls="" id="audio"></audio>
+<div class="renderStatus idle" id="renderStatus">대기중</div>
+<a class="download disabledDownload" download="senial_video.webm" id="downloadLink" style="display:block">WEBM 생성 후 다운로드 가능</a>
+<pre id="log">대기 중...</pre>
+</section>
+<aside class="rightPane panel jumpTarget" id="secEdit">
+<section class="rightScriptPanel cleanBlock">
+<h2>대본 편집 / 복사</h2>
+<p class="hint">여기서 대본을 수정·복사하고, 음성파일을 넣은 뒤 장면 자동나누기를 진행합니다.</p>
+<textarea id="rightScriptEditor" placeholder="주제를 선택하거나 직접 대본을 붙여넣으세요. 음성파일을 넣은 후 장면 자동나누기를 실행하세요."></textarea>
+<div class="rightScriptActions">
+<button class="secondary" id="btnCopyRightScript" type="button">대본 복사</button>
+<button class="primary" id="btnApplyRightScript" type="button">장면 자동나누기</button>
+<button class="secondary" id="btnCheckScriptApiRight" type="button">API 확인</button>
+</div>
+<div class="rightVoiceQuickLinks" aria-label="음성 제작 사이트 바로가기">
+  <a href="https://ondoku3.com/" target="_blank" rel="noopener">오토쿠</a>
+  <a href="https://clovadubbing.naver.com" target="_blank" rel="noopener">클로바더빙</a>
+  <a href="https://elevenlabs.io" target="_blank" rel="noopener">일레븐랩스</a>
+  <a href="https://ttsmaker.com" target="_blank" rel="noopener">TTSMaker</a>
+</div>
+<div class="rightAudioDropBox">
+  <div class="audioDropZone rightAudioDropZone" id="rightAudioDropZone" role="button" tabindex="0">
+    <b>음성파일 넣기</b>
+    <span>MP3 / WAV / M4A 파일을 끌어다 놓거나 클릭해서 선택하세요.</span>
+  </div>
+  <div class="attachInfo audioStatusBox rightAudioStatus" id="rightAudioAttachInfo">온도쿠에서 받은 음성파일을 여기에 넣으세요.</div>
+</div>
+</section>
+<h2>8. 장면 편집</h2>
+<p class="hint">맨 위에서 썸네일 자동 만들기를 먼저 하고, 아래에서 각 장면의 이미지/자막/움직임을 편집합니다.</p>
+<div class="toolbar stickyTools">
+<button id="btnAddCaption">자막칸 추가</button>
+<button class="v5Hide" id="btnSyncFixEditor">싱크 보정</button>
+<button class="danger" id="btnClear" style="display:none">초기화</button>
+</div>
+<div class="sceneEditor" id="sceneEditor"></div>
+</aside>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
